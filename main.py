@@ -20,9 +20,7 @@ def cast_spell():
         return f"Successfully cast to Trotec.", 200
     elif machine == "thunder":
         logging.info("Casting to Thunder.")
-        # Assuming we don't need to kill_vnc before casting to thunder,
-        # or that thunder might be on a different display/setup.
-        # If kill_vnc() is always needed, it can be called here too.
+        cast_trotec()
         cast_thunder()
         return f"Successfully cast to Thunder.", 200
     else:
