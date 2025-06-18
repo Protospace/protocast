@@ -29,7 +29,7 @@ def cast_spell():
             logging.info("Cancelled previous auto-stop timer.")
         auto_stop_timer = threading.Timer(AUTO_STOP_TIMEOUT_SECONDS, _auto_stop_vnc)
         auto_stop_timer.start()
-        logging.info(f"Scheduled auto-stop for VNC in {AUTO_STOP_TIMEOUT_SECONDS / 3600} hour(s).")
+        logging.info(f"Scheduled auto-stop for VNC in {AUTO_STOP_TIMEOUT_SECONDS} seconds.")
         return f"Successfully cast to Trotec.", 200
     elif machine == "thunder":
         logging.info("Casting to Thunder.")
@@ -41,7 +41,7 @@ def cast_spell():
             logging.info("Cancelled previous auto-stop timer.")
         auto_stop_timer = threading.Timer(AUTO_STOP_TIMEOUT_SECONDS, _auto_stop_vnc)
         auto_stop_timer.start()
-        logging.info(f"Scheduled auto-stop for VNC in {AUTO_STOP_TIMEOUT_SECONDS / 3600} hour(s).")
+        logging.info(f"Scheduled auto-stop for VNC in {AUTO_STOP_TIMEOUT_SECONDS} seconds.")
         return f"Successfully cast to Thunder.", 200
     else:
         logging.warning(f"Invalid or missing machine parameter: {machine}")
@@ -71,25 +71,31 @@ def cast_trotec():
     """Executes the xtightvncviewer command."""
     command = "DISPLAY=:1 xtightvncviewer -viewonly -fullscreen 172.17.17.214"
     try:
-        logging.info(f"Executing command: {command}")
-        subprocess.run(command, shell=True, check=True)
-        logging.info("Command executed successfully.")
-    except subprocess.CalledProcessError as e:
-        logging.error(f"Command failed with error: {e}")
+        logging.info(f"Launching command: {command}")
+        # Use Popen to run the command in the background (non-blocking)
+        subprocess.Popen(command, shell=True)
+        logging.info(f"Command '{command}' launched successfully.")
     except FileNotFoundError:
-        logging.error(f"Command not found: xtightvncviewer. Please ensure it is installed and in PATH.")
+        # This error is more likely if the shell itself (e.g., /bin/sh) is not found,
+        # or if 'xtightvncviewer' is not in PATH and the shell fails to find it.
+        logging.error(f"Failed to launch VNC for Trotec: Shell or VNC command might not be found. Ensure xtightvncviewer is in PATH and shell is available.")
+    except Exception as e: # Catch other potential errors during Popen
+        logging.error(f"An error occurred while launching VNC for Trotec with Popen: {e}")
 
 def cast_thunder():
     """Executes the xtightvncviewer command for Thunder."""
     command = "DISPLAY=:1 xtightvncviewer -viewonly -fullscreen 172.17.17.215"
     try:
-        logging.info(f"Executing command: {command}")
-        subprocess.run(command, shell=True, check=True)
-        logging.info("Command executed successfully.")
-    except subprocess.CalledProcessError as e:
-        logging.error(f"Command failed with error: {e}")
+        logging.info(f"Launching command: {command}")
+        # Use Popen to run the command in the background (non-blocking)
+        subprocess.Popen(command, shell=True)
+        logging.info(f"Command '{command}' launched successfully.")
     except FileNotFoundError:
-        logging.error(f"Command not found: xtightvncviewer. Please ensure it is installed and in PATH.")
+        # This error is more likely if the shell itself (e.g., /bin/sh) is not found,
+        # or if 'xtightvncviewer' is not in PATH and the shell fails to find it.
+        logging.error(f"Failed to launch VNC for Thunder: Shell or VNC command might not be found. Ensure xtightvncviewer is in PATH and shell is available.")
+    except Exception as e: # Catch other potential errors during Popen
+        logging.error(f"An error occurred while launching VNC for Thunder with Popen: {e}")
 
 def kill_vnc():
     """Executes the killall command for xtightvncviewer."""
