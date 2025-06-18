@@ -25,6 +25,18 @@ def cast_trotec():
     except FileNotFoundError:
         logging.error(f"Command not found: xtightvncviewer. Please ensure it is installed and in PATH.")
 
+def cast_thunder():
+    """Executes the xtightvncviewer command for Thunder."""
+    command = "DISPLAY=:1 xtightvncviewer -viewonly -fullscreen 172.17.17.215"
+    try:
+        logging.info(f"Executing command: {command}")
+        subprocess.run(command, shell=True, check=True)
+        logging.info("Command executed successfully.")
+    except subprocess.CalledProcessError as e:
+        logging.error(f"Command failed with error: {e}")
+    except FileNotFoundError:
+        logging.error(f"Command not found: xtightvncviewer. Please ensure it is installed and in PATH.")
+
 def main():
     app.run(debug=DEBUG, host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
 
