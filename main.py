@@ -10,8 +10,24 @@ app = Flask(__name__)
 
 @app.route('/cast', methods=['POST'])
 def cast_spell():
-    logging.info(f"Received POST request on /cast. Request data: {request.data}")
-    return "Cast successful!", 200
+    machine = request.form.get('machine')
+    logging.info(f"Received POST request on /cast. Requested machine: {machine}")
+
+    if machine == "trotec":
+        logging.info("Casting to Trotec.")
+        kill_vnc()  # Kill any existing VNC session first
+        cast_trotec()
+        return f"Successfully cast to Trotec.", 200
+    elif machine == "thunder":
+        logging.info("Casting to Thunder.")
+        # Assuming we don't need to kill_vnc before casting to thunder,
+        # or that thunder might be on a different display/setup.
+        # If kill_vnc() is always needed, it can be called here too.
+        cast_thunder()
+        return f"Successfully cast to Thunder.", 200
+    else:
+        logging.warning(f"Invalid or missing machine parameter: {machine}")
+        return f"Invalid or missing 'machine' parameter. Use 'trotec' or 'thunder'.", 400
 
 def cast_trotec():
     """Executes the xtightvncviewer command."""
