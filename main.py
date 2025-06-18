@@ -1,4 +1,4 @@
-import os, logging, subprocess
+import os, logging, subprocess, threading
 DEBUG = os.environ.get('DEBUG')
 logging.basicConfig(
         format='[%(asctime)s] %(levelname)s %(module)s/%(funcName)s - %(message)s',
@@ -7,21 +7,38 @@ logging.basicConfig(
 from flask import Flask, request
 
 app = Flask(__name__)
+auto_stop_timer = None # Timer for automatic VNC stop
 
 @app.route('/cast', methods=['POST'])
 def cast_spell():
     machine = request.form.get('machine')
     logging.info(f"Received POST request on /cast. Requested machine: {machine}")
 
+    global auto_stop_timer
+
     if machine == "trotec":
         logging.info("Casting to Trotec.")
         kill_vnc()  # Kill any existing VNC session first
         cast_trotec()
+        # Restart auto-stop timer
+        if auto_stop_timer is not None and auto_stop_timer.is_alive():
+            auto_stop_timer.cancel()
+            logging.info("Cancelled previous auto-stop timer.")
+        auto_stop_timer = threading.Timer(3600.0, _auto_stop_vnc) # 1 hour
+        auto_stop_timer.start()
+        logging.info("Scheduled auto-stop for VNC in 1 hour.")
         return f"Successfully cast to Trotec.", 200
     elif machine == "thunder":
         logging.info("Casting to Thunder.")
         cast_trotec()
         cast_thunder()
+        # Restart auto-stop timer
+        if auto_stop_timer is not None and auto_stop_timer.is_alive():
+            auto_stop_timer.cancel()
+            logging.info("Cancelled previous auto-stop timer.")
+        auto_stop_timer = threading.Timer(3600.0, _auto_stop_vnc) # 1 hour
+        auto_stop_timer.start()
+        logging.info("Scheduled auto-stop for VNC in 1 hour.")
         return f"Successfully cast to Thunder.", 200
     else:
         logging.warning(f"Invalid or missing machine parameter: {machine}")
@@ -29,9 +46,23 @@ def cast_spell():
 
 @app.route('/stop', methods=['POST'])
 def stop_cast():
+    global auto_stop_timer
     logging.info("Received POST request on /stop.")
+
+    if auto_stop_timer is not None and auto_stop_timer.is_alive():
+        auto_stop_timer.cancel()
+        auto_stop_timer = None
+        logging.info("Manual stop: auto-stop timer cancelled.")
+    
     kill_vnc()
     return "Attempted to stop VNC viewers.", 200
+
+def _auto_stop_vnc():
+    """Called by the timer to automatically stop VNC."""
+    global auto_stop_timer
+    logging.info("Auto-stopping VNC viewers due to inactivity timer.")
+    kill_vnc()
+    auto_stop_timer = None # Clear the timer reference
 
 def cast_trotec():
     """Executes the xtightvncviewer command."""
