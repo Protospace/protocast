@@ -9,3 +9,18 @@ def main():
 
 if __name__ == '__main__':
     main()
+import logging
+from flask import Flask, request
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+
+app = Flask(__name__)
+
+@app.route('/cast', methods=['POST'])
+def cast_spell():
+    logging.info(f"Received POST request on /cast. Request data: {request.data}")
+    return "Cast successful!", 200
+
+if __name__ == '__main__':
+    app.run(debug=True)
