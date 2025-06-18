@@ -6,6 +6,9 @@ logging.basicConfig(
 
 from flask import Flask, request
 
+# Constants
+AUTO_STOP_TIMEOUT_SECONDS = 3600.0  # 1 hour
+
 app = Flask(__name__)
 auto_stop_timer = None # Timer for automatic VNC stop
 
@@ -24,9 +27,9 @@ def cast_spell():
         if auto_stop_timer is not None and auto_stop_timer.is_alive():
             auto_stop_timer.cancel()
             logging.info("Cancelled previous auto-stop timer.")
-        auto_stop_timer = threading.Timer(3600.0, _auto_stop_vnc) # 1 hour
+        auto_stop_timer = threading.Timer(AUTO_STOP_TIMEOUT_SECONDS, _auto_stop_vnc)
         auto_stop_timer.start()
-        logging.info("Scheduled auto-stop for VNC in 1 hour.")
+        logging.info(f"Scheduled auto-stop for VNC in {AUTO_STOP_TIMEOUT_SECONDS / 3600} hour(s).")
         return f"Successfully cast to Trotec.", 200
     elif machine == "thunder":
         logging.info("Casting to Thunder.")
@@ -36,9 +39,9 @@ def cast_spell():
         if auto_stop_timer is not None and auto_stop_timer.is_alive():
             auto_stop_timer.cancel()
             logging.info("Cancelled previous auto-stop timer.")
-        auto_stop_timer = threading.Timer(3600.0, _auto_stop_vnc) # 1 hour
+        auto_stop_timer = threading.Timer(AUTO_STOP_TIMEOUT_SECONDS, _auto_stop_vnc)
         auto_stop_timer.start()
-        logging.info("Scheduled auto-stop for VNC in 1 hour.")
+        logging.info(f"Scheduled auto-stop for VNC in {AUTO_STOP_TIMEOUT_SECONDS / 3600} hour(s).")
         return f"Successfully cast to Thunder.", 200
     else:
         logging.warning(f"Invalid or missing machine parameter: {machine}")
