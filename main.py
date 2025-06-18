@@ -37,6 +37,28 @@ def cast_thunder():
     except FileNotFoundError:
         logging.error(f"Command not found: xtightvncviewer. Please ensure it is installed and in PATH.")
 
+def kill_vnc():
+    """Executes the killall command for xtightvncviewer."""
+    command = "killall xtightvncviewer"
+    try:
+        logging.info(f"Executing command: {command}")
+        # We don't use check=True here because killall returns a non-zero exit code
+        # if no processes were killed, which is not necessarily an error in this context.
+        result = subprocess.run(command, shell=True, capture_output=True, text=True)
+        if result.returncode == 0:
+            logging.info("killall command executed successfully. Processes were likely terminated.")
+        else:
+            # killall returns 1 if no matching processes were found.
+            # Other non-zero codes might indicate other errors.
+            logging.warning(f"killall command finished. Exit code: {result.returncode}. Stderr: {result.stderr.strip()}")
+            if "no process found" in result.stderr.lower():
+                 logging.info("No xtightvncviewer processes were found to kill.")
+
+    except FileNotFoundError:
+        logging.error(f"Command not found: killall. Please ensure it is installed and in PATH.")
+    except Exception as e:
+        logging.error(f"An unexpected error occurred while trying to run killall: {e}")
+
 def main():
     app.run(debug=DEBUG, host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
 
