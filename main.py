@@ -7,7 +7,7 @@ logging.basicConfig(
 from flask import Flask, request
 
 # Constants
-AUTO_STOP_TIMEOUT_SECONDS = 3600.0  # 1 hour
+AUTO_STOP_TIMEOUT_SECONDS = 5  # 1 hour
 
 app = Flask(__name__)
 auto_stop_timer = None # Timer for automatic VNC stop
@@ -33,7 +33,7 @@ def cast_spell():
         return f"Successfully cast to Trotec.", 200
     elif machine == "thunder":
         logging.info("Casting to Thunder.")
-        cast_trotec()
+        kill_vnc()  # Kill any existing VNC session first
         cast_thunder()
         # Restart auto-stop timer
         if auto_stop_timer is not None and auto_stop_timer.is_alive():
