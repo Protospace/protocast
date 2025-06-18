@@ -7,7 +7,7 @@ logging.basicConfig(
 from flask import Flask, request
 
 # Constants
-AUTO_STOP_TIMEOUT_SECONDS = 5  # 1 hour
+AUTO_STOP_TIMEOUT_SECONDS = 3600  # 1 hour
 
 app = Flask(__name__)
 auto_stop_timer = None # Timer for automatic VNC stop
