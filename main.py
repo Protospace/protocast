@@ -27,6 +27,12 @@ def cast_spell():
         logging.warning(f"Invalid or missing machine parameter: {machine}")
         return f"Invalid or missing 'machine' parameter. Use 'trotec' or 'thunder'.", 400
 
+@app.route('/stop', methods=['POST'])
+def stop_cast():
+    logging.info("Received POST request on /stop.")
+    kill_vnc()
+    return "Attempted to stop VNC viewers.", 200
+
 def cast_trotec():
     """Executes the xtightvncviewer command."""
     command = "DISPLAY=:1 xtightvncviewer -viewonly -fullscreen 172.17.17.214"
