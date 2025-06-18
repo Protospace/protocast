@@ -1,10 +1,10 @@
 import os, logging
-from flask import Flask, request
-
 DEBUG = os.environ.get('DEBUG')
 logging.basicConfig(
         format='[%(asctime)s] %(levelname)s %(module)s/%(funcName)s - %(message)s',
         level=logging.DEBUG if DEBUG else logging.INFO)
+
+from flask import Flask, request
 
 app = Flask(__name__)
 
