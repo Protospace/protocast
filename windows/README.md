@@ -27,4 +27,4 @@ or
 
 **Run:** Minimized
 
-![Shortcut Properties](https://github.com/Protospace/protocast/tree/master/windows/protocast-shortcut-properties.jpg "Shortcut Properties")
+![Shortcut Properties](https://github.com/Protospace/protocast/blob/master/windows/protocast-shortcut-properties.jpg "Shortcut Properties")
