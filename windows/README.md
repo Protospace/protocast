@@ -20,7 +20,7 @@ This files provides a command line that is actually in the shortcut.
 * IPAddress.ps1
 This script runs just the ipAddress command and displays the result to the screen. 
 
-The shortcuts can be created manually using the following properties"
+The shortcuts can be created manually using the following properties"  \
 **Target:** powershell.exe -ExecutionPolicy Bypass -File \\ps\netlogon\protocast\protocast.ps1 start  
 or  
 **Target:** powershell.exe -ExecutionPolicy Bypass -File \\ps\netlogon\protocast\protocast.ps1 stop  
